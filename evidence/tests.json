@@ -1,0 +1,154 @@
+{
+  "environment": "Ganache in-memory EVM; Shanghai; solc 0.8.38+commit.1835d247.Emscripten.clang; optimizer 200; not Sepolia",
+  "passed": 34,
+  "results": [
+    {
+      "name": "deployment and token configuration",
+      "status": "PASS"
+    },
+    {
+      "name": "deposits credit principal",
+      "status": "PASS"
+    },
+    {
+      "name": "zero deposit rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "deposit without allowance rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "unauthorized strategy deployment rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "early close rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "request removes spendable entitlement",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate principal request rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "deployment with requests pending rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "settlement before close rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "40 percent proportional allocation",
+      "status": "PASS"
+    },
+    {
+      "name": "reserved funds match funded total",
+      "status": "PASS"
+    },
+    {
+      "name": "cannot overfund using reserved liquidity",
+      "status": "PASS"
+    },
+    {
+      "name": "new requests blocked in closed cohort",
+      "status": "PASS"
+    },
+    {
+      "name": "unrelated wallet cannot claim others entitlement",
+      "status": "PASS"
+    },
+    {
+      "name": "duplicate claim rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "partial claims preserve remaining principal",
+      "status": "PASS"
+    },
+    {
+      "name": "unauthorized fixture release rejected",
+      "status": "PASS"
+    },
+    {
+      "name": "fully funded cohort opens next round",
+      "status": "PASS"
+    },
+    {
+      "name": "reserved claims cannot be redeployed",
+      "status": "PASS"
+    },
+    {
+      "name": "all principal returned without residual reservation",
+      "status": "PASS"
+    },
+    {
+      "name": "empty expired round can advance",
+      "status": "PASS"
+    },
+    {
+      "name": "seeded conservation and proportional allocation 1",
+      "status": "PASS"
+    },
+    {
+      "name": "full recovery including rounding 1",
+      "status": "PASS"
+    },
+    {
+      "name": "seeded conservation and proportional allocation 2",
+      "status": "PASS"
+    },
+    {
+      "name": "full recovery including rounding 2",
+      "status": "PASS"
+    },
+    {
+      "name": "seeded conservation and proportional allocation 3",
+      "status": "PASS"
+    },
+    {
+      "name": "full recovery including rounding 3",
+      "status": "PASS"
+    },
+    {
+      "name": "seeded conservation and proportional allocation 4",
+      "status": "PASS"
+    },
+    {
+      "name": "full recovery including rounding 4",
+      "status": "PASS"
+    },
+    {
+      "name": "seeded conservation and proportional allocation 5",
+      "status": "PASS"
+    },
+    {
+      "name": "full recovery including rounding 5",
+      "status": "PASS"
+    },
+    {
+      "name": "seeded conservation and proportional allocation 6",
+      "status": "PASS"
+    },
+    {
+      "name": "full recovery including rounding 6",
+      "status": "PASS"
+    }
+  ],
+  "gasLastObserved": {
+    "mint": 45621,
+    "approve": 46127,
+    "deposit": 77200,
+    "deploy": 70221,
+    "request": 68254,
+    "close": 59252,
+    "settle": 75054,
+    "claim": 67552,
+    "release": 33689,
+    "close empty": 79617
+  }
+}

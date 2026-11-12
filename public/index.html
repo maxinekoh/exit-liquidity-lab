@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Exit Liquidity Lab</title
+  ><link rel="stylesheet" href="/style.css" />
+  <body>
+    <main>
+      <header>
+        <div>
+          <small>SC6106 · FINANCIAL DAPP</small>
+          <h1>Exit Liquidity Lab</h1>
+          <p>Understand what you own. See what you can withdraw.</p>
+        </div>
+        <button id="connect">Connect MetaMask</button>
+      </header>
+      <aside>
+        Experimental principal-only vault · dUSD is a faucet test token · No
+        real yield · A request does not guarantee immediate withdrawal.
+      </aside>
+      <p id="account">
+        Wallet disconnected. Public vault data remains visible.
+      </p>
+      <section id="metrics" class="grid"></section>
+      <section class="grid">
+        <article>
+          <h2>Your position</h2>
+          <p>Wallet <strong id="wallet">—</strong> dUSD</p>
+          <p>Unrequested principal <strong id="available">—</strong></p>
+          <label
+            >Amount in dUSD
+            <input
+              id="amount"
+              type="number"
+              min="0.000001"
+              step="0.000001"
+              value="100"
+          /></label>
+          <div class="actions">
+            <button id="mint">Get test tokens</button
+            ><button id="deposit">Approve and deposit</button
+            ><button id="request">Request withdrawal</button>
+          </div>
+          <p>
+            All exits enter the current round. A closed round stays active until
+            fully funded. Later requests must wait.
+          </p>
+        </article>
+        <article>
+          <h2>Claim a funded withdrawal</h2>
+          <label
+            >Round <input id="claimRound" type="number" min="1" value="1"
+          /></label>
+          <p>
+            Requested <strong id="requested">—</strong> · Paid
+            <strong id="paid">—</strong>
+          </p>
+          <p>Claimable now <strong id="claimable">—</strong> dUSD</p>
+          <p>Awaiting liquidity <strong id="pending">—</strong> dUSD</p>
+          <button id="claim">Claim to your wallet</button>
+          <p>
+            Proportional allocations use the closed round total. Unclaimed
+            allocations stay reserved.
+          </p>
+        </article>
+      </section>
+      <article>
+        <h2>Round operations</h2>
+        <p id="roundDetail"></p>
+        <div class="actions">
+          <button id="close">Close eligible round</button
+          ><button id="settle">Allocate available liquidity</button
+          ><button id="deploy">Manager: move amount to fixture</button
+          ><button id="release">Manager: return amount from fixture</button>
+        </div>
+        <p>
+          The fixture models delayed liquidity. Only the deployment manager
+          controls its return timing; funds can return only to this vault.
+        </p>
+      </article>
+      <p id="status" role="status" aria-live="polite">Loading chain state…</p>
+      <article>
+        <h2>Confirmed on-chain history</h2>
+        <p id="range"></p>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Block</th>
+                <th>Transaction</th>
+              </tr>
+            </thead>
+            <tbody id="history"></tbody>
+          </table>
+        </div>
+      </article>
+      <footer>
+        Request → pending → proportionally funded → claimed. A queue allocates
+        returned funds; it does not create liquidity.
+      </footer>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

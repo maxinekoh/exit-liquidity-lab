@@ -1,0 +1,205 @@
+SC6106 Individual Assignment<br/>Blockchain Development Fundamentals Part 1<br/>13 November 2026
+
+
+Introduction
+
+
+Exit Liquidity Lab is a financial decentralized application that records withdrawal requests and allocates limited returned liquidity proportionally within a closed cohort. It demonstrates Solidity financial rules, a wallet-driven web interface, a Node.js backend and evidence-based evaluation. The implementation is a principal-only local prototype: it manages test tokens, earns no yield and uses a controlled liquidity fixture.
+
+The main result is bounded. Contract tests and browser integration demonstrate safe accounting for the exercised scenarios. A synthetic comparison shows that proportional settlement gives all participants an earlier partial allocation, while FIFO completes some withdrawals earlier. The mechanism distributes accessible money; it cannot create liquidity or guarantee repayment.
+
+
+Problem Statement
+
+
+Lending and yield vault depositors can own claims on assets that are not immediately available. Borrowers may be using the assets, or strategies may require time and operational actions to unwind. Aave documents that withdrawal access depends on unborrowed liquidity; at full utilization, suppliers wait for repayments or additional supply [1]. A balance therefore expresses an entitlement, not an unconditional promise of immediate cash.
+
+The engineering problem is how to record competing exit requests, allocate recovered funds under a published policy and distinguish pending entitlements from funded claims. Ordinary sequential withdrawals can make outcomes sensitive to transaction order. A proportional policy reduces that sensitivity within one cohort, at the cost of batching delay and partial rather than complete payments.
+
+The target users are depositors and vault operators evaluating constrained exits. The contribution is an implemented allocation experiment and explicit accounting, not a novel lending protocol or a claim that established protocols lack withdrawal mechanisms. A conventional database could record requests, but enforcing pooled-token transfers on-chain allows participants to verify permissions and allocation rules independently of the backend.
+
+
+Evidence and Objectives
+
+
+Protocol evidence and historical cases
+
+Heimbach, Schertenleib and Wattenhofer study Aave and Compound around the September 2022 Ethereum Merge. They document Aave ETH utilization reaching 100% and lenders losing withdrawal access as available liquidity was exhausted, despite intervention restricting borrowing. The study reports no accompanying spike in mass liquidations or irretrievable loans [2]. This supports separating liquidity constraints from insolvency; it does not establish that this prototype would have prevented the event.
+
+A second governance record identifies SNX utilization reaching 100% in Aave V2 during November 2022 [3]. That retrospective establishes another instance of exhausted unborrowed liquidity, but does not establish individual waiting times or failed transaction counts. Neither case is replayed by the experiment: the scenarios below are synthetic.
+
+Sun, Stasinakis and Sermpinis examine available liquidity and market concentration in Aave [4]. Their academic preprint supports examining concentrated request sizes rather than relying only on aggregate deposits. The IMF also identifies utilization spikes and concentrated liquidity provision in its historical sample [5]. These sources motivate the stress conditions, rather than prove that one allocation policy is universally superior.
+
+Existing mechanisms and scope
+
+Morpho already documents liquidity constraints and configuration-dependent exit mechanisms [6]. Yearn uses a withdrawal queue to order strategy liquidation; this differs from a queue of depositor requests [7]. ERC-7540 specifies asynchronous request and claim flows [8]. The prototype borrows its lifecycle vocabulary but is not ERC-4626 or ERC-7540 compliant.
+
+Objective | Observable acceptance evidence
+
+Financial correctness | Allocations never exceed funded tokens; claims cannot repeat
+
+Complete DApp | Deposit, request, close, settle and claim through the web interface
+
+Transparent state | Separate unrequested principal, pending demand and claimable funds
+
+Evaluation | Identical cash-return path for sequential, FIFO and proportional models
+
+Reproducibility | Pinned dependencies, scripts, JSON results and genuine local screenshots
+
+Scope is one six-decimal test token, one vault, one fixture and one on-chain allocation policy. There is no leverage, oracle, swap, performance fee, strategy loss or interest accrual. The restricted scope isolates allocation correctness while preserving a complete financial transaction lifecycle.
+
+
+System Architecture
+
+
+Layer | Responsibility and trust boundary
+
+Browser and MetaMask | Displays balances and asks the wallet to sign. Wallet controls user keys.
+
+Node.js API | Reads configuration, contract state and confirmed events. Holds no signing keys.
+
+ExitVault | Enforces requests, timing, proportional entitlement, reservations and claims.
+
+DemoToken | Six-decimal faucet asset with no monetary value.
+
+LiquidityFixture | Holds deployed tokens; manager controls return timing, destination fixed to vault.
+
+Transaction path: browser action → MetaMask signature → Ethereum JSON-RPC → contract execution → receipt → refreshed UI. Read path: browser → Node API → RPC reads or event scan → JSON. Contract state is authoritative. The backend cannot approve withdrawals or change allocations; its failure affects visibility, not recorded ownership.
+
+The manager can deploy free funds only before any current-cohort request exists. Anyone can close an expired round or settle a closed round. Settlement reserves available tokens for existing requests. Each depositor claims to the address that created the request. The fixture manager can withhold returns indefinitely, making its liquidity assumption explicit rather than suggesting autonomous investment performance.
+
+Technologies Used
+
+Solidity 0.8.38 compiles for the Shanghai EVM with optimizer enabled for 200 runs. Ethers 6.17.0 constructs calls and reads receipts. Ganache 7.9.2 supplies a deterministic local Ethereum environment. Node.js provides a minimal HTTP backend; the frontend uses HTML, CSS and JavaScript modules. A package lock pins dependency resolution. No database is required because confirmed contract events reconstruct activity.
+
+Local verification used chain ID 1337. Sepolia is the brief's recommended public test network, and deployment scripts accept an external RPC URL and dedicated deployer key. No Sepolia deployment or explorer evidence has been produced. Similarly, wallet integration uses the MetaMask-compatible EIP-1193 interface, but the automated browser run used an injected local provider rather than the actual extension. These acceptance gaps are listed explicitly.
+
+The API exposes /api/config, /api/state and /api/history. History scans at most 5,000 recent blocks and declares truncation. Re-reading events after refresh avoids presenting transient browser memory as permanent transaction history. A production indexer would need pagination, persistence and chain-reorganization handling.
+
+
+Smart Contract Design
+
+
+A round accepts requests until its immutable close timestamp. Requesting transfers an amount from a user's unrequested principal balance into the round ledger; it does not transfer tokens out. After closure, the total request denominator is fixed. Settlement may occur repeatedly as funds return. Full funding opens the next round even if earlier claimants have not collected their reserved tokens.
+
+For request q, closed-round total Q, cumulative funding F and cumulative amount already paid P, the next claim is floor(q × F / Q) - P. All quantities are token base units. F never exceeds Q. Cumulative calculation avoids losing fractional entitlement after repeated partial settlements: when F = Q, the original q is exactly payable.
+
+Function | Principal rule
+
+deposit(a) | Positive amount; exact token balance increase; credit principal
+
+request(a) | Open window and sufficient unrequested entitlement
+
+close() | Timestamp reached; freeze cohort; advance if empty
+
+settle() | Closed cohort; reserve min(free liquidity, unmet demand)
+
+claim(round) | Only caller entitlement; update accounting before transfer
+
+deploy(a) | Manager only; no current requests; never use reservations
+
+Free liquidity equals the vault token balance minus global reservations. Reserved tokens are excluded from future settlement and deployment. Principal decreases only when a claim transfers tokens out. With no direct donations, losses or unsupported token behavior, outstanding principal equals tokens held by the vault plus fixture. Donations create excess assets rather than new user principal.
+
+Security invariants are: reserved ≤ vault balance; funded ≤ requested; paid(user) ≤ cumulative entitlement(user); and a user cannot request against the same principal twice. State-changing functions use a reentrancy guard, and checked arithmetic rejects overflow. Each settle and claim uses a fixed number of storage operations; no participant enumeration is required. This is a structural complexity observation, not a measured large-scale throughput result.
+
+There are deliberate restrictions. Only one cohort is active; later users cannot request until it is fully funded. Pending requests cannot be cancelled. Settlement is permissionless but still needs a transaction. A total principal cap of 10^18 base units bounds q and F, so their product is at most 10^36, below uint256 capacity. General token compatibility and production solvency are not claimed.
+
+
+Implementation
+
+
+The frontend connects a wallet, checks its network, and reloads on account or chain changes. Deposits require an exact-amount token approval followed by a separate deposit signature. A submitted hash is shown as pending; success is displayed only after a receipt with successful status. Rejections and execution errors produce an action-not-completed message. Round controls remain contract-authorized even when visible to all users.
+
+Figure 1. Actual local browser detail after a partial claim: 60 dUSD outstanding, 40 paid and zero currently claimable. The automation wallet is an injected EIP-1193 provider, not the real MetaMask extension. Full desktop and mobile captures are supplied in evidence/.
+
+Security privacy and ethics
+
+Authorization rests on msg.sender, not a backend session. Public reads require no login; there are no protected backend mutation endpoints. The backend stores no wallet keys. Public addresses and transactions are observable and pseudonymous, not private. No names, financial documents or personal identifiers are placed on-chain. The interface labels the faucet asset and absence of actual yield. Testing is not an audit, and no real-money suitability is asserted.
+
+
+Testing and Results
+
+
+The regression runner passed 34 named assertions. An independent state-machine oracle checked 480 actions across six seeds, including 339 mined reverts and 17,613 assertions. A separate 32-depositor test used 17 funding installments and recovered every base unit after full funding. These bounded randomized and scenario tests are not exhaustive fuzzing or a formal proof.
+
+A separate headless Chrome run exercised connection, faucet mint, approval, deposit, fixture deployment, withdrawal request, closure, settlement and claim against the local HTTP backend and chain. A 100-token deposit with 60 deployed produced a 40-token partial claim and 60 outstanding principal. The history API returned confirmed events; the browser recorded no page errors. Responsive desktop and mobile captures are included. Six HTTP cases and four simulated wallet-error cases also passed. Actual extension testing and human usability remain unverified.
+
+Operation | Last observed gas
+
+Deposit | 77200
+
+Settle | 75054
+
+Claim | 67552
+
+Gas values are last-observed successful local transactions from the test runner, not averages. Storage state differs between operations; there is no production fee or throughput inference. Source: evidence/tests.json. No statistically meaningful confirmation-latency study was conducted.
+
+Synthetic policy comparison
+
+Three users request 100, 150 and 250 tokens. Returned liquidity is 200, then 100, then 200 at three abstract checkpoints. FIFO serves arrival order; sequential service uses reverse order. Both allow partial withdrawals. The integer cumulative model assumes prompt claims and checks 901 scenario/permutation pairs, including no return, excess return and zero demand. It does not model strategic arrivals or cross-cohort welfare.
+
+Policy | Checkpoint 1 fulfilled percent | Full completion checkpoints
+
+Sequential reverse order | 0 / 0 / 80 | 3 / 3 / 2
+
+FIFO arrival order | 100 / 66.67 / 0 | 1 / 2 / 3
+
+Proportional cohort | 40 / 40 / 40 | 3 / 3 / 3
+
+All policies return the same aggregate cash. Proportional service removes within-cohort order dependence in this example and gives everyone an initial allocation, but completes no user early. FIFO benefits earlier users. The experiment supports a distributional trade-off, not universal fairness, better yield or faster liquidity creation. Source: evidence/benchmark.json.
+
+
+Challenges Encountered
+
+
+The main design challenge was preserving entitlements across repeated partial funding. Per-settlement rounding can obscure residual claims; cumulative funding with per-user paid balances makes remaining entitlement explicit. Global reservation accounting prevents an unclaimed allocation from being reused. Browser approval and deposit are separate transactions, so the interface communicates each stage rather than implying one atomic action.
+
+Local execution also exposed transaction gas-estimation sensitivity when the same function encountered a different storage branch. The test harness uses explicit gas limits for affected branch transitions and still checks successful receipts. This is an implementation lesson; deployed gas use is measured independently of the supplied limit. The local chain used Ganache's JavaScript fallback under Node 24, so wall-clock performance is not representative of production.
+
+
+Limitations
+
+
+The fixture models temporary illiquidity with eventual recovery assumed in completed scenarios. The manager can delay returns permanently. The mechanism cannot resolve default or distinguish recoverable debt from bad assets. It guarantees only allocation of tokens actually reserved. A new deposit can supply cash for existing exits but creates a corresponding new principal liability; this is liquidity substitution, not a solvency improvement.
+
+A closed cohort blocks later requests until fully funded, introducing cross-cohort priority and possible starvation. All exits are delayed by the request window, even when cash exists. No cancellation path exists. Malicious-token behavior, public-network reorgs, user research and exhaustive adversarial campaigns remain incomplete. Local provider testing does not establish actual MetaMask or Sepolia acceptance. The portfolio adapter and interest/loss accounting have not been implemented. Dependency review retains 33 advisories, including five critical, in the Ganache development subtree; the runtime dependency was upgraded. The local chain is test-only and must not hold real keys.
+
+
+Future Improvements
+
+
+First complete actual MetaMask acceptance and Sepolia evidence. Next add a single lending adapter on a pinned fork, then share-based yield accounting with an explicit rule for gains and losses while requests wait. Compare idle-liquidity buffers under stated yield assumptions. Introduce independently reviewed full-precision arithmetic and broader invariant/fuzz tests before increasing economic complexity. A persistent event indexer should reconcile reorgs and paginate history.
+
+
+Conclusion
+
+
+Exit Liquidity Lab implements a complete local withdrawal workflow and demonstrates proportional allocation with reserved claims. Its main analytical finding is a measurable trade-off between broad partial access and early individual completion. The strongest contribution is the connection between documented liquidity constraints, explicit financial policy, executable controls and reproducible evidence. The current results establish a tested educational prototype within stated assumptions, not a production vault or a cure for liquidity risk.
+
+
+References
+
+
+[1] Aave. <i>Protocol Risks</i>.<br/><link href="https://aave.com/docs/resources/risks" color="#174f72">https://aave.com/docs/resources/risks</link>
+
+[2] L. Heimbach, E. Schertenleib and R. Wattenhofer. <i>DeFi Lending During The Merge. Advances in Financial Technologies 2023; arXiv version 3</i>.<br/><link href="https://arxiv.org/html/2303.08748v3" color="#174f72">https://arxiv.org/html/2303.08748v3</link>
+
+[3] Aave Governance, P. Lei. <i>Q4 2022 Risk-Off Measures. 1 December 2022</i>.<br/><link href="https://governance.aave.com/t/q4-2022-risk-off-measures/10898" color="#174f72">https://governance.aave.com/t/q4-2022-risk-off-measures/10898</link>
+
+[4] X. Sun, C. Stasinakis and G. Sermpinis. <i>Liquidity Risks in Lending Protocols: Evidence from Aave Protocol. Academic preprint, revised 28 April 2023</i>.<br/><link href="https://arxiv.org/abs/2206.11973" color="#174f72">https://arxiv.org/abs/2206.11973</link>
+
+[5] International Monetary Fund. <i>Global Financial Stability Report. April 2022, Chapter 3, liquidity risk discussion and Figure 3.10</i>.<br/><link href="https://www.imf.org/-/media/files/publications/gfsr/2022/april/english/ch3.pdf" color="#174f72">https://www.imf.org/-/media/files/publications/gfsr/2022/april/english/ch3.pdf</link>
+
+[6] Morpho. <i>Liquidity Curation</i>.<br/><link href="https://docs.morpho.org/curate/concepts/liquidity/" color="#174f72">https://docs.morpho.org/curate/concepts/liquidity/</link>
+
+[7] Yearn. <i>Deploying and Managing a V3 Multi Strategy Vault</i>.<br/><link href="https://docs.yearn.fi/developers/v3/vault_management" color="#174f72">https://docs.yearn.fi/developers/v3/vault_management</link>
+
+[8] J. Offerijns et al.. <i>ERC-7540 Asynchronous ERC-4626 Tokenized Vaults. Created 18 October 2023</i>.<br/><link href="https://eips.ethereum.org/EIPS/eip-7540" color="#174f72">https://eips.ethereum.org/EIPS/eip-7540</link>
+
+Online sources accessed 12 November 2026. Protocol documentation is used for implementation mechanics; the historical study, governance record and institutional report support the problem. No historical case is presented as an empirical test of this prototype.
+
+Reproducibility record
+
+Source files, package lock, deployment script, 34-check regression runner, independent stress oracle, policy model and machine-readable evidence accompany this report. Run npm ci and npm run check:all from the source directory. Local demonstration instructions and outstanding public-network acceptance tasks are documented in README.md and SUBMISSION_REVIEW.md. No database export applies.
+
+The technical report contains all eleven requested topics within eight pages, including references. Personal identification and course-specific submission metadata must be supplied separately where required.

@@ -1,0 +1,49 @@
+{
+  "tests": [
+    {
+      "case": "GET /",
+      "status": "PASS"
+    },
+    {
+      "case": "GET /api/config",
+      "status": "PASS"
+    },
+    {
+      "case": "GET /api/state",
+      "status": "PASS"
+    },
+    {
+      "case": "GET /api/history",
+      "status": "PASS"
+    },
+    {
+      "case": "GET /missing-file",
+      "status": "PASS"
+    },
+    {
+      "case": "POST /api/state",
+      "status": "PASS"
+    },
+    {
+      "case": "missing",
+      "status": "PASS",
+      "observed": "MetaMask is not installed."
+    },
+    {
+      "case": "wrong-network",
+      "status": "PASS",
+      "observed": "Wrong network. Select chain 1337 in MetaMask."
+    },
+    {
+      "case": "connection-rejected",
+      "status": "PASS",
+      "observed": "user rejected action (action=\"requestAccess\", reason=\"rejected\", info={ \"error\": { \"code\": 4001, \"message\": \"ethers-user-denied: User rejected connection\" }, \"payload\": { \"id\": 2, \"jsonrpc\": \"2.0\", \"method\": \"eth_requestAccounts\", \"params\": [  ] } }, code=ACTION_REJECTED, version=6.17.0)"
+    },
+    {
+      "case": "signature-rejected",
+      "status": "PASS",
+      "observed": "Action not completed: user rejected action"
+    }
+  ],
+  "qualification": "Simulated EIP-1193 wallet responses in real Chrome, not MetaMask extension. HTTP against local backend."
+}

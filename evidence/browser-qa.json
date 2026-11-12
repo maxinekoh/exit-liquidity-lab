@@ -1,0 +1,28 @@
+{
+  "wallet": "Injected local EIP-1193 provider; NOT real MetaMask extension",
+  "chainId": 1337,
+  "actions": [
+    "connect",
+    "mint",
+    "approve",
+    "deposit",
+    "deploy fixture",
+    "request",
+    "close",
+    "settle",
+    "claim"
+  ],
+  "state": {
+    "round": "1",
+    "closesAt": "1794499502",
+    "total": "100000000",
+    "funded": "40000000",
+    "closed": true,
+    "free": "0",
+    "reserved": "0",
+    "principal": "60000000",
+    "block": 11
+  },
+  "eventCount": 6,
+  "pageErrors": []
+}

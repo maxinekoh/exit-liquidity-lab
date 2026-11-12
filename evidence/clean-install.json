@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "command": "npm ci --offline --cache <populated npm cache>; npm run check:all",
+  "qualification": "Fresh separate node_modules tree; dependency artifacts came from populated registry cache. Not a second operating system.",
+  "node": "24.18.0",
+  "packageLockSha256": "c988cf8c99dca606e6afccbfaa3d828ea7abde207564dec18aaedc6c012ee49d",
+  "regressionChecks": 34,
+  "stateMachineActions": 480,
+  "stateAssertions": 17613,
+  "scaleUsers": 32,
+  "installments": 17,
+  "modelScenarioPermutationPairs": 901
+}

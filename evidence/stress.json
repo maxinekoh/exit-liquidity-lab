@@ -1,0 +1,105 @@
+{
+  "environment": "Local in-memory EVM; mined success AND revert receipts; independent state-machine oracle; not public-network stress",
+  "steps": 480,
+  "reverts": 339,
+  "assertions": 17613,
+  "seeds": [
+    {
+      "seed": 6106,
+      "steps": 80,
+      "status": "PASS"
+    },
+    {
+      "seed": 42,
+      "steps": 80,
+      "status": "PASS"
+    },
+    {
+      "seed": 99991,
+      "steps": 80,
+      "status": "PASS"
+    },
+    {
+      "seed": 1337,
+      "steps": 80,
+      "status": "PASS"
+    },
+    {
+      "seed": 2026,
+      "steps": 80,
+      "status": "PASS"
+    },
+    {
+      "seed": 8675309,
+      "steps": 80,
+      "status": "PASS"
+    },
+    {
+      "name": "32 users and 17 liquidity installments",
+      "status": "PASS",
+      "settleGas": [
+        82665,
+        54692,
+        54692,
+        54692,
+        54692,
+        54692,
+        54692,
+        54692,
+        54692,
+        54692,
+        54692,
+        54692,
+        54692,
+        54692,
+        54692,
+        54692,
+        75054
+      ]
+    }
+  ],
+  "gasByOperation": {
+    "donate": {
+      "min": 34587,
+      "max": 51687,
+      "samples": 50
+    },
+    "deposit": {
+      "min": 63492,
+      "max": 110764,
+      "samples": 50
+    },
+    "deploy": {
+      "min": 56512,
+      "max": 70192,
+      "samples": 3
+    },
+    "close": {
+      "min": 59252,
+      "max": 79617,
+      "samples": 21
+    },
+    "request": {
+      "min": 54545,
+      "max": 82481,
+      "samples": 10
+    },
+    "settle": {
+      "min": 108125,
+      "max": 108125,
+      "samples": 4
+    },
+    "release": {
+      "min": 38453,
+      "max": 38453,
+      "samples": 3
+    }
+  },
+  "limitations": [
+    "No real lending integration",
+    "No actual MetaMask extension",
+    "No formal verification",
+    "No arbitrary-token support",
+    "Random actions are seeded and bounded"
+  ]
+}

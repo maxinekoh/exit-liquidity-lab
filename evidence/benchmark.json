@@ -1,0 +1,116 @@
+{
+  "label": "Synthetic single-cohort model with integer base units and cumulative rounding; not historical replay. Immediate withdrawals use reverse order; FIFO uses arrival order. Baselines permit partial withdrawals and assume prompt claims. No strategic arrival response or cross-cohort arrivals modeled.",
+  "requests": [
+    "100000000",
+    "150000000",
+    "250000000"
+  ],
+  "liquidity": [
+    "200000000",
+    "100000000",
+    "200000000"
+  ],
+  "outputs": [
+    {
+      "policy": "sequential",
+      "fulfilledPercentByCheckpoint": [
+        [
+          0,
+          0,
+          80
+        ],
+        [
+          0,
+          33.3333,
+          100
+        ],
+        [
+          100,
+          100,
+          100
+        ]
+      ],
+      "firstPaymentCheckpoint": [
+        3,
+        2,
+        1
+      ],
+      "completionCheckpoint": [
+        3,
+        3,
+        2
+      ],
+      "residualCash": "0",
+      "totalPaid": "500000000"
+    },
+    {
+      "policy": "FIFO",
+      "fulfilledPercentByCheckpoint": [
+        [
+          100,
+          66.6666,
+          0
+        ],
+        [
+          100,
+          100,
+          20
+        ],
+        [
+          100,
+          100,
+          100
+        ]
+      ],
+      "firstPaymentCheckpoint": [
+        1,
+        1,
+        2
+      ],
+      "completionCheckpoint": [
+        1,
+        2,
+        3
+      ],
+      "residualCash": "0",
+      "totalPaid": "500000000"
+    },
+    {
+      "policy": "proportional cohort",
+      "fulfilledPercentByCheckpoint": [
+        [
+          40,
+          40,
+          40
+        ],
+        [
+          60,
+          60,
+          60
+        ],
+        [
+          100,
+          100,
+          100
+        ]
+      ],
+      "firstPaymentCheckpoint": [
+        1,
+        1,
+        1
+      ],
+      "completionCheckpoint": [
+        3,
+        3,
+        3
+      ],
+      "residualCash": "0",
+      "totalPaid": "500000000"
+    }
+  ],
+  "robustness": {
+    "seed": 6106,
+    "scenarioPermutationPairs": 901,
+    "checks": "Conservation, bounded fulfillment, zero demand, over-return, no-return, integer dust, and proportional within-cohort order invariance"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "exit-liquidity-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "compile": "node scripts/compile.mjs",
+    "test": "node test/run.mjs",
+    "chain": "ganache --chain.chainId 1337 --wallet.deterministic --server.host 127.0.0.1 --server.port 18545",
+    "deploy": "node scripts/deploy.mjs",
+    "start": "node server.mjs",
+    "benchmark": "node scripts/benchmark.mjs",
+    "stress": "node test/stress.mjs",
+    "check:all": "npm run compile && npm test && npm run stress && npm run benchmark"
+  },
+  "dependencies": {
+    "ethers": "6.17.0"
+  },
+  "devDependencies": {
+    "ganache": "7.9.2",
+    "solc": "0.8.38",
+    "prettier": "3.6.2",
+    "prettier-plugin-solidity": "2.2.1"
+  },
+  "overrides": {
+    "solc": {
+      "tmp": "0.2.7"
+    }
+  }
+}
