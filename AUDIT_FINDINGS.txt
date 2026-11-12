@@ -40,3 +40,6 @@ Problem analysis, contract rules, backend integration and reproducible testing a
 
 SUBMISSION STATUS
 Private repository verified: https://github.com/maxinekoh/exit-liquidity-lab. A revised source ZIP accompanies the project. These do not replace the official assignment submission channel. Course-specific deadline, file naming, visibility/access policy and AI/assistance declaration have not been supplied. Verify those in the module instructions. Do not present this review as an independent audit or the project as submission-ready solely because tests pass.
+
+BUILD PORTABILITY FINDING
+The first Ubuntu GitHub Actions job failed npm ci because Ganache's extraneous fsevents lock entry lacked optional metadata. chokidar declares fsevents as optional. Corrected the lock entry to optional=true without changing its version or integrity. A fresh macOS npm ci passed after correction; verify the subsequent Linux Actions run before claiming cross-platform success.

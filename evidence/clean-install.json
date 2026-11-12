@@ -3,11 +3,12 @@
   "command": "npm ci --offline --cache <populated npm cache>; npm run check:all",
   "qualification": "Fresh separate node_modules tree; dependency artifacts came from populated registry cache. Not a second operating system.",
   "node": "24.18.0",
-  "packageLockSha256": "c988cf8c99dca606e6afccbfaa3d828ea7abde207564dec18aaedc6c012ee49d",
+  "packageLockSha256": "10d5c042e81c7d0e4bbc343b53757988fc9c1c4c531dc8ee1213131e8ad66ab9",
   "regressionChecks": 34,
   "stateMachineActions": 480,
   "stateAssertions": 17613,
   "scaleUsers": 32,
   "installments": 17,
-  "modelScenarioPermutationPairs": 901
+  "modelScenarioPermutationPairs": 901,
+  "portabilityNote": "Original Linux CI exposed a mandatory fsevents lock entry. Marked optional to match chokidar optionalDependencies; fresh macOS npm ci passed after metadata correction. Remote Linux rerun is recorded separately."
 }
