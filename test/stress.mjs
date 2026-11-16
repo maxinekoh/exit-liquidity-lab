@@ -53,7 +53,7 @@ async function world(count = 6) {
   }
   return { rpc, p, signers, addresses, token, vault, strategy, tx };
 }
-for (const initialSeed of [6106, 42, 99991, 1337, 2026, 8675309]) {
+for (const initialSeed of [7619, 42, 99991, 1337, 2026, 8675309]) {
   const w = await world();
   let seed = initialSeed;
   const rnd = () => {

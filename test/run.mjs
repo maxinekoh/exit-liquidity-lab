@@ -143,7 +143,7 @@ await check("empty expired round can advance", async () =>
   assert.equal(await vault.currentRound(), 3n),
 );
 // Seeded scenario tests: varying request sizes, partial funding and claim ordering.
-let seed = 6106;
+let seed = 7619;
 const rnd = () => {
   seed = (seed * 1664525 + 1013904223) >>> 0;
   return seed;

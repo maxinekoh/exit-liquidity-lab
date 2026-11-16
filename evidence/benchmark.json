@@ -109,7 +109,7 @@
     }
   ],
   "robustness": {
-    "seed": 6106,
+    "seed": 7619,
     "scenarioPermutationPairs": 901,
     "checks": "Conservation, bounded fulfillment, zero demand, over-return, no-return, integer dust, and proportional within-cohort order invariance"
   }

@@ -1,12 +1,12 @@
-SC6106 Individual Assignment<br/>Blockchain Development Fundamentals Part 1<br/>13 November 2026
+Proportional withdrawals when a vault is short on cash<br/>Maxine Koh Xin Yi
 
 
 Introduction
 
 
-Exit Liquidity Lab is a financial decentralized application that records withdrawal requests and allocates limited returned liquidity proportionally within a closed cohort. It demonstrates Solidity financial rules, a wallet-driven web interface, a Node.js backend and evidence-based evaluation. The implementation is a principal-only local prototype: it manages test tokens, earns no yield and uses a controlled liquidity fixture.
+Exit Liquidity Lab asks how a vault should split the cash it actually has when several people want to withdraw at once. The project implements proportional funding in Solidity and compares it with queue-based policies. A local test token and a fixture with controlled return times make it possible to repeat the same shortage.
 
-The main result is bounded. Contract tests and browser integration demonstrate safe accounting for the exercised scenarios. A synthetic comparison shows that proportional settlement gives all participants an earlier partial allocation, while FIFO completes some withdrawals earlier. The mechanism distributes accessible money; it cannot create liquidity or guarantee repayment.
+In the synthetic comparison, proportional settlement puts some cash in reach of every requester at the first checkpoint. FIFO completes the first withdrawal sooner. In either case, the same amount of liquidity returns.
 
 
 Problem Statement
@@ -72,7 +72,7 @@ Technologies Used
 
 Solidity 0.8.38 compiles for the Shanghai EVM with optimizer enabled for 200 runs. Ethers 6.17.0 constructs calls and reads receipts. Ganache 7.9.2 supplies a deterministic local Ethereum environment. Node.js provides a minimal HTTP backend; the frontend uses HTML, CSS and JavaScript modules. A package lock pins dependency resolution. No database is required because confirmed contract events reconstruct activity.
 
-Local verification used chain ID 1337. Sepolia is the brief's recommended public test network, and deployment scripts accept an external RPC URL and dedicated deployer key. No Sepolia deployment or explorer evidence has been produced. Similarly, wallet integration uses the MetaMask-compatible EIP-1193 interface, but the automated browser run used an injected local provider rather than the actual extension. These acceptance gaps are listed explicitly.
+Verification used local chain ID 1337. The browser test exercised the wallet interface through an injected provider. Testing with the MetaMask extension and deployment on Sepolia are still open.
 
 The API exposes /api/config, /api/state and /api/history. History scans at most 5,000 recent blocks and declares truncation. Re-reading events after refresh avoids presenting transient browser memory as permanent transaction history. A production indexer would need pagination, persistence and chain-reorganization handling.
 
@@ -120,7 +120,7 @@ Authorization rests on msg.sender, not a backend session. Public reads require n
 Testing and Results
 
 
-The regression runner passed 34 named assertions. An independent state-machine oracle checked 480 actions across six seeds, including 339 mined reverts and 17,613 assertions. A separate 32-depositor test used 17 funding installments and recovered every base unit after full funding. These bounded randomized and scenario tests are not exhaustive fuzzing or a formal proof.
+The regression runner passed 34 named assertions. An independent state-machine oracle checked 480 actions across six seeds, including 342 mined reverts and 18,053 assertions. A separate 32-depositor test used 17 funding installments and recovered every base unit after full funding. These bounded randomized and scenario tests are not exhaustive fuzzing or a formal proof.
 
 A separate headless Chrome run exercised connection, faucet mint, approval, deposit, fixture deployment, withdrawal request, closure, settlement and claim against the local HTTP backend and chain. A 100-token deposit with 60 deployed produced a 40-token partial claim and 60 outstanding principal. The history API returned confirmed events; the browser recorded no page errors. Responsive desktop and mobile captures are included. Six HTTP cases and four simulated wallet-error cases also passed. Actual extension testing and human usability remain unverified.
 
@@ -174,7 +174,7 @@ First complete actual MetaMask acceptance and Sepolia evidence. Next add a singl
 Conclusion
 
 
-Exit Liquidity Lab implements a complete local withdrawal workflow and demonstrates proportional allocation with reserved claims. Its main analytical finding is a measurable trade-off between broad partial access and early individual completion. The strongest contribution is the connection between documented liquidity constraints, explicit financial policy, executable controls and reproducible evidence. The current results establish a tested educational prototype within stated assumptions, not a production vault or a cure for liquidity risk.
+Spreading each funding installment across the round gives all requesters earlier access to some of their money in this example. FIFO gets the earliest requester out sooner. The contract makes its choice explicit, tracks funded claims, and leaves the timing of future returns to the fixture. That timing is the main limitation for later rounds.
 
 
 References
@@ -200,6 +200,4 @@ Online sources accessed 12 November 2026. Protocol documentation is used for imp
 
 Reproducibility record
 
-Source files, package lock, deployment script, 34-check regression runner, independent stress oracle, policy model and machine-readable evidence accompany this report. Run npm ci and npm run check:all from the source directory. Local demonstration instructions and outstanding public-network acceptance tasks are documented in README.md and SUBMISSION_REVIEW.md. No database export applies.
-
-The technical report contains all eleven requested topics within eight pages, including references. Personal identification and course-specific submission metadata must be supplied separately where required.
+Source files, package lock, deployment script, 34-check regression runner, independent stress oracle, policy model and machine-readable evidence accompany this report. Run npm ci and npm run check:all from the source directory. See README.md for the local demo and VERIFICATION.md for the scope of the checks.

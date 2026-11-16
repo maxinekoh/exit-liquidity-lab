@@ -67,7 +67,7 @@ const permutations = [
   [2, 0, 1],
   [2, 1, 0],
 ];
-let seed = 6106,
+let seed = 7619,
   cases = 0;
 const rnd = () => {
   seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
@@ -107,7 +107,7 @@ fs.writeFileSync(
       liquidity: liquidity.map(String),
       outputs,
       robustness: {
-        seed: 6106,
+        seed: 7619,
         scenarioPermutationPairs: cases,
         checks:
           "Conservation, bounded fulfillment, zero demand, over-return, no-return, integer dust, and proportional within-cohort order invariance",

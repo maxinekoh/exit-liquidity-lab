@@ -1,11 +1,11 @@
 {
   "environment": "Local in-memory EVM; mined success AND revert receipts; independent state-machine oracle; not public-network stress",
   "steps": 480,
-  "reverts": 339,
-  "assertions": 17613,
+  "reverts": 342,
+  "assertions": 18053,
   "seeds": [
     {
-      "seed": 6106,
+      "seed": 7619,
       "steps": 80,
       "status": "PASS"
     },
@@ -59,39 +59,39 @@
     }
   ],
   "gasByOperation": {
-    "donate": {
-      "min": 34587,
-      "max": 51687,
-      "samples": 50
-    },
     "deposit": {
       "min": 63492,
       "max": 110764,
       "samples": 50
     },
-    "deploy": {
-      "min": 56512,
-      "max": 70192,
-      "samples": 3
-    },
     "close": {
       "min": 59252,
       "max": 79617,
-      "samples": 21
+      "samples": 22
+    },
+    "donate": {
+      "min": 34587,
+      "max": 51687,
+      "samples": 49
+    },
+    "deploy": {
+      "min": 70192,
+      "max": 70192,
+      "samples": 2
     },
     "request": {
       "min": 54545,
       "max": 82481,
-      "samples": 10
-    },
-    "settle": {
-      "min": 108125,
-      "max": 108125,
-      "samples": 4
+      "samples": 11
     },
     "release": {
       "min": 38453,
       "max": 38453,
+      "samples": 1
+    },
+    "settle": {
+      "min": 108125,
+      "max": 108125,
       "samples": 3
     }
   },

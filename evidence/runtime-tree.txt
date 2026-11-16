@@ -1,4 +1,4 @@
-exit-liquidity-lab@0.1.0 /Users/maxinekoh/Documents/Codex/2026-11-12/plea/outputs/submission
+exit-liquidity-lab@0.1.0
 └─┬ ethers@6.17.0
   ├── @adraffy/ens-normalize@1.11.1
   ├─┬ @noble/curves@1.2.0
